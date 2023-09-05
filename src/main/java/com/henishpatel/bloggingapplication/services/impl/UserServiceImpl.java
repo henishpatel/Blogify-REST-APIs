@@ -22,15 +22,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
-		User user = this.dtoToUser(userDTO);
-		User savedUser = this.userRepo.save(user);
-		return this.userToDto(savedUser);
+		User user = dtoToUser(userDTO);
+		User savedUser = userRepo.save(user);
+		return userToDto(savedUser);
 	}
 
 	@Override
 	public UserDTO updateUser(UserDTO userDTO, Integer userId) {
 
-		User user = this.userRepo.findById(userId)
+		User user = userRepo.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userId));
 
 		user.setName(userDTO.getName());
@@ -38,27 +38,27 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(userDTO.getPassword());
 		user.setAbout(userDTO.getAbout());
 
-		User updatedUser = this.userRepo.save(user);
-		return this.userToDto(updatedUser);
+		User updatedUser = userRepo.save(user);
+		return userToDto(updatedUser);
 	}
 
 	@Override
 	public UserDTO getUserById(Integer userId) {
 
-		User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","Id",userId));
-		return this.userToDto(user);
+		User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","Id",userId));
+		return userToDto(user);
 	}
 
 	@Override
 	public List<UserDTO> getAllUsers() {
-		List<User> users = this.userRepo.findAll();
-		return users.stream().map(user -> this.userToDto(user)).collect(Collectors.toList());
+		List<User> users = userRepo.findAll();
+		return users.stream().map(user -> userToDto(user)).collect(Collectors.toList());
 	}
 
 	@Override
 	public void deleteUser(Integer userId) {
-		User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","Id",userId));
-		this.userRepo.delete(user);
+		User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","Id",userId));
+		userRepo.delete(user);
 	}
 
 	public User dtoToUser(UserDTO userDTO) {

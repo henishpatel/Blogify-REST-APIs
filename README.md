@@ -1,2 +1,2 @@
 # Blogging-application-REST-Apis
-REST APIs for bloggin application made using Spring Boot
+REST APIs for blogging application made using Spring Boot 3

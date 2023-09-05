@@ -58,9 +58,4 @@ public class PostController {
 		return new ResponseEntity<PostDTO>(postDTO,HttpStatus.OK);
 	}
 
-	@GetMapping("/posts")
-	public ResponseEntity<List<PostDTO>> getAllPost(@RequestParam String keyword){
-		List<PostDTO> postDTOS = postService.searchPosts(keyword);
-		return new ResponseEntity<List<PostDTO>>(postDTOS,HttpStatus.OK);
-	}
 }
