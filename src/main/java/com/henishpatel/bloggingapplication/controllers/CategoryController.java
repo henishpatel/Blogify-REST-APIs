@@ -46,4 +46,5 @@ public class CategoryController {
 	public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Integer categoryId){
 		return ResponseEntity.ok(categoryService.getCategoryById(categoryId));
 	}
+
 }
