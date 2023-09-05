@@ -76,4 +76,16 @@ public class PostController {
 		return new ResponseEntity<PostDTO>(postDTO,HttpStatus.OK);
 	}
 
+	@GetMapping("/posts/search/{searchKeyword}")
+	public ResponseEntity<PostResponse> getPostsByKeyword(
+			@PathVariable String searchKeyword,
+			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+			@RequestParam(value = "sortBy", defaultValue = "postId", required = false)String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = "asc", required = false)String sortDir
+	){
+		PostResponse postsDTOs = postService.searchPosts(searchKeyword,pageNumber, pageSize, sortBy, sortDir);
+		return new ResponseEntity<PostResponse>(postsDTOs,HttpStatus.OK);
+	}
+
 }

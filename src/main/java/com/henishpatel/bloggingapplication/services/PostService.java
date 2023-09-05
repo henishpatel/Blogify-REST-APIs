@@ -34,5 +34,5 @@ public interface PostService {
 	PostResponse getPostsByUser(Integer userId, Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
 	//search posts
-	List<PostDTO> searchPosts(String keyword);
+	PostResponse searchPosts(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 }
