@@ -5,12 +5,16 @@ import com.henishpatel.bloggingapplication.entities.Post;
 import com.henishpatel.bloggingapplication.entities.User;
 import com.henishpatel.bloggingapplication.exceptions.ResourceNotFoundException;
 import com.henishpatel.bloggingapplication.payload.PostDTO;
+import com.henishpatel.bloggingapplication.payload.PostResponse;
 import com.henishpatel.bloggingapplication.repositories.CategoryRepo;
 import com.henishpatel.bloggingapplication.repositories.PostRepo;
 import com.henishpatel.bloggingapplication.repositories.UserRepo;
 import com.henishpatel.bloggingapplication.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -67,9 +71,22 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<PostDTO> getAllPost() {
-		List<Post> posts = postRepo.findAll();
-		return posts.stream().map((post)-> modelMapper.map(post, PostDTO.class)).collect(Collectors.toList());
+	public PostResponse getAllPost(Integer pageNumber, Integer pageSize) {
+
+		Pageable pageable = PageRequest.of(pageNumber,pageSize);
+		Page<Post> pagePosts = postRepo.findAll(pageable);
+		List<Post> allPost = pagePosts.getContent();
+		List<PostDTO> allPostDTOS = allPost.stream().map((post)-> modelMapper.map(post, PostDTO.class)).collect(Collectors.toList());
+
+		PostResponse postResponse = new PostResponse();
+		postResponse.setContent(allPostDTOS);
+		postResponse.setPageNumber(pagePosts.getNumber());
+		postResponse.setPageSize(pagePosts.getSize());
+		postResponse.setLastPage(pagePosts.isLast());
+		postResponse.setTotalPages(pagePosts.getTotalPages());
+		postResponse.setTotalElements((int) pagePosts.getTotalElements());
+
+		return postResponse;
 	}
 
 	@Override
@@ -80,21 +97,45 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<PostDTO> getPostsByCategory(Integer categoryId) {
+	public PostResponse getPostsByCategory(Integer categoryId, Integer pageNumber, Integer pageSize) {
 		Category category = categoryRepo.findById(categoryId)
 				.orElseThrow(() -> new ResourceNotFoundException("Category","Category ID",categoryId));
-		List<Post> posts = postRepo.findByCategory(category);
-		return posts.stream().map((post)-> modelMapper.map(post, PostDTO.class)).collect(Collectors.toList());
 
+		Pageable pageable = PageRequest.of(pageNumber,pageSize);
+		Page<Post> pagePosts = postRepo.findByCategory(category,pageable);
+
+		List<Post> allPost = pagePosts.getContent();
+
+		List<PostDTO> allPostDTOS = allPost.stream().map((post)-> modelMapper.map(post, PostDTO.class)).collect(Collectors.toList());
+		PostResponse postResponse = new PostResponse();
+		postResponse.setContent(allPostDTOS);
+		postResponse.setPageNumber(pagePosts.getNumber());
+		postResponse.setPageSize(pagePosts.getSize());
+		postResponse.setLastPage(pagePosts.isLast());
+		postResponse.setTotalPages(pagePosts.getTotalPages());
+		postResponse.setTotalElements((int) pagePosts.getTotalElements());
+
+		return postResponse;
 	}
 
 	@Override
-	public List<PostDTO> getPostsByUser(Integer userId) {
+	public PostResponse getPostsByUser(Integer userId, Integer pageNumber, Integer pageSize) {
 		User user = userRepo.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("User","User ID",userId));
-		List<Post> posts = postRepo.findByUser(user);
-		return posts.stream().map((post)-> modelMapper.map(post, PostDTO.class)).collect(Collectors.toList());
+		Pageable pageable = PageRequest.of(pageNumber,pageSize);
+		Page<Post> pagePosts = postRepo.findByUser(user, pageable);
+		List<Post> allPost = pagePosts.getContent();
 
+		List<PostDTO> allPostDTOS = allPost.stream().map((post)-> modelMapper.map(post, PostDTO.class)).collect(Collectors.toList());
+		PostResponse postResponse = new PostResponse();
+		postResponse.setContent(allPostDTOS);
+		postResponse.setPageNumber(pagePosts.getNumber());
+		postResponse.setPageSize(pagePosts.getSize());
+		postResponse.setLastPage(pagePosts.isLast());
+		postResponse.setTotalPages(pagePosts.getTotalPages());
+		postResponse.setTotalElements((int) pagePosts.getTotalElements());
+
+		return postResponse;
 	}
 
 	@Override

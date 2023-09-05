@@ -2,6 +2,7 @@ package com.henishpatel.bloggingapplication.controllers;
 
 import com.henishpatel.bloggingapplication.payload.ApiResponse;
 import com.henishpatel.bloggingapplication.payload.PostDTO;
+import com.henishpatel.bloggingapplication.payload.PostResponse;
 import com.henishpatel.bloggingapplication.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,20 +37,31 @@ public class PostController {
 	}
 
 	@GetMapping("/user/{userId}/posts")
-	public ResponseEntity<List<PostDTO>> getPostByUserId(@PathVariable Integer userId){
-		List<PostDTO> postDTOS = postService.getPostsByUser(userId);
-		return new ResponseEntity<List<PostDTO>>(postDTOS,HttpStatus.OK);
+	public ResponseEntity<PostResponse> getPostByUserId(
+			@PathVariable Integer userId,
+			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+	){
+		PostResponse postResponseDTOS = postService.getPostsByUser(userId, pageNumber, pageSize);
+		return new ResponseEntity<PostResponse>(postResponseDTOS,HttpStatus.OK);
 	}
 	@GetMapping("/category/{categoryId}/posts")
-	public ResponseEntity<List<PostDTO>> getPostByCategoryId(@PathVariable Integer categoryId){
-		List<PostDTO> postDTOS = postService.getPostsByCategory(categoryId);
-		return new ResponseEntity<List<PostDTO>>(postDTOS,HttpStatus.OK);
+	public ResponseEntity<PostResponse> getPostByCategoryId(
+			@PathVariable Integer categoryId,
+			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+	){
+		PostResponse postResponseDTOS = postService.getPostsByCategory(categoryId, pageNumber, pageSize);
+		return new ResponseEntity<PostResponse>(postResponseDTOS,HttpStatus.OK);
 	}
 
 	@GetMapping("/posts")
-	public ResponseEntity<List<PostDTO>> getAllPost(){
-		List<PostDTO> postDTOS = postService.getAllPost();
-		return new ResponseEntity<List<PostDTO>>(postDTOS,HttpStatus.OK);
+	public ResponseEntity<PostResponse> getAllPost(
+			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+	){
+		PostResponse postResponseDTOS = postService.getAllPost(pageNumber, pageSize);
+		return new ResponseEntity<PostResponse>(postResponseDTOS,HttpStatus.OK);
 	}
 
 	@GetMapping("/posts/{postId}")

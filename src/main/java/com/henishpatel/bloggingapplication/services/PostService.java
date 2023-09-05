@@ -1,6 +1,7 @@
 package com.henishpatel.bloggingapplication.services;
 
 import com.henishpatel.bloggingapplication.payload.PostDTO;
+import com.henishpatel.bloggingapplication.payload.PostResponse;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface PostService {
 
 	//get all posts
 
-	List<PostDTO> getAllPost();
+	PostResponse getAllPost(Integer pageNumber, Integer pageSize);
 
 	//get single post
 
@@ -27,10 +28,10 @@ public interface PostService {
 
 	//get all posts by category
 
-	List<PostDTO> getPostsByCategory(Integer categoryId);
+	PostResponse getPostsByCategory(Integer categoryId, Integer pageNumber, Integer pageSize);
 
 	//get all posts by user
-	List<PostDTO> getPostsByUser(Integer userId);
+	PostResponse getPostsByUser(Integer userId, Integer pageNumber, Integer pageSize);
 
 	//search posts
 	List<PostDTO> searchPosts(String keyword);
