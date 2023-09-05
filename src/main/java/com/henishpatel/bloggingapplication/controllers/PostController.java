@@ -40,27 +40,33 @@ public class PostController {
 	public ResponseEntity<PostResponse> getPostByUserId(
 			@PathVariable Integer userId,
 			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
-			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+			@RequestParam(value = "sortBy", defaultValue = "postId", required = false)String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = "asc", required = false)String sortDir
 	){
-		PostResponse postResponseDTOS = postService.getPostsByUser(userId, pageNumber, pageSize);
+		PostResponse postResponseDTOS = postService.getPostsByUser(userId, pageNumber, pageSize, sortBy, sortDir);
 		return new ResponseEntity<PostResponse>(postResponseDTOS,HttpStatus.OK);
 	}
 	@GetMapping("/category/{categoryId}/posts")
 	public ResponseEntity<PostResponse> getPostByCategoryId(
 			@PathVariable Integer categoryId,
 			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
-			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+			@RequestParam(value = "sortBy", defaultValue = "postId", required = false)String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = "asc", required = false)String sortDir
 	){
-		PostResponse postResponseDTOS = postService.getPostsByCategory(categoryId, pageNumber, pageSize);
+		PostResponse postResponseDTOS = postService.getPostsByCategory(categoryId, pageNumber, pageSize, sortBy, sortDir);
 		return new ResponseEntity<PostResponse>(postResponseDTOS,HttpStatus.OK);
 	}
 
 	@GetMapping("/posts")
 	public ResponseEntity<PostResponse> getAllPost(
 			@RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
-			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+			@RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+			@RequestParam(value = "sortBy", defaultValue = "postId", required = false)String sortBy,
+			@RequestParam(value = "sortDir", defaultValue = "asc", required = false)String sortDir
 	){
-		PostResponse postResponseDTOS = postService.getAllPost(pageNumber, pageSize);
+		PostResponse postResponseDTOS = postService.getAllPost(pageNumber, pageSize, sortBy, sortDir);
 		return new ResponseEntity<PostResponse>(postResponseDTOS,HttpStatus.OK);
 	}
 

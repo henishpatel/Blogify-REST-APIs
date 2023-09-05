@@ -20,7 +20,7 @@ public interface PostService {
 
 	//get all posts
 
-	PostResponse getAllPost(Integer pageNumber, Integer pageSize);
+	PostResponse getAllPost(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
 	//get single post
 
@@ -28,10 +28,10 @@ public interface PostService {
 
 	//get all posts by category
 
-	PostResponse getPostsByCategory(Integer categoryId, Integer pageNumber, Integer pageSize);
+	PostResponse getPostsByCategory(Integer categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
 	//get all posts by user
-	PostResponse getPostsByUser(Integer userId, Integer pageNumber, Integer pageSize);
+	PostResponse getPostsByUser(Integer userId, Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
 	//search posts
 	List<PostDTO> searchPosts(String keyword);
