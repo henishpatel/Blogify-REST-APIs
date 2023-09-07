@@ -3,6 +3,8 @@ package com.henishpatel.bloggingapplication.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "comments")
@@ -18,6 +20,7 @@ public class Comment {
 
 	@ManyToOne
 	@JoinColumn(name = "post_id")
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Post post;
 
 }
