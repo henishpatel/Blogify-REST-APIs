@@ -1,5 +1,7 @@
 package com.henishpatel.bloggingapplication.payload;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,10 +19,15 @@ public class PostDTO {
 
 	private Integer postId;
 
+	@NotEmpty
+	@Size(min = 4, message = "Title must be min of 4 characters !!")
 	private String title;
 
+	@NotEmpty
+	@Size(min = 10, message = "Content must be min of 10 characters !!")
 	private String content;
 
+	@NotEmpty
 	private String imageName;
 
 	private Date addedDate;

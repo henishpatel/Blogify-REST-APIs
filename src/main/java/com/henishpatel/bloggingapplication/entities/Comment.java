@@ -16,6 +16,7 @@ public class Comment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	@Column(nullable = false)
 	private String content;
 
 	@ManyToOne

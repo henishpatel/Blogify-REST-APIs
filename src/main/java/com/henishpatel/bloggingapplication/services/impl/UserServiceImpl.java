@@ -7,6 +7,8 @@ import com.henishpatel.bloggingapplication.repositories.UserRepo;
 import com.henishpatel.bloggingapplication.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -62,8 +64,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public User dtoToUser(UserDTO userDTO) {
-
+		PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		User user = modelMapper.map(userDTO,User.class);
+		user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
 //		user.setId(userDTO.getId());
 //		user.setName(userDTO.getName());

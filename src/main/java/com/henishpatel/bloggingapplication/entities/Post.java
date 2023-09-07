@@ -28,6 +28,7 @@ public class Post {
 	@Column(length = 1000000000)
 	private String content;
 
+	@Column(nullable = false)
 	private String imageName;
 
 	private Date addedDate;
