@@ -1,22 +1,30 @@
 package com.henishpatel.bloggingapplication.config;
 
+import com.henishpatel.bloggingapplication.security.CustomUserDetailsService;
+import com.henishpatel.bloggingapplication.security.JwtAuthenticationEntryPoint;
+import com.henishpatel.bloggingapplication.security.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
@@ -25,11 +33,18 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+	@Autowired
 	private UserDetailsService userDetailsService;
 
-	public SecurityConfig(UserDetailsService userDetailsService) {
-		this.userDetailsService = userDetailsService;
-	}
+	@Autowired
+	private CustomUserDetailsService customUserDetailsService;
+
+	@Autowired
+	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+	@Autowired
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
+
 
 
 	@Bean
@@ -43,35 +58,54 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity.csrf()
-				.disable()
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf().disable()
 				.authorizeHttpRequests((authorize) ->
-//						authorize.anyRequest().authenticated()
-								authorize.requestMatchers(HttpMethod.GET,"/api/**").permitAll()
-										.requestMatchers("/api/auth/**").permitAll()
-										.anyRequest().authenticated()
-				)
-				.httpBasic(Customizer.withDefaults());
+						//authorize.anyRequest().authenticated()
+						authorize
+								//.requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+								.requestMatchers("/api/v1/auth/**").permitAll()
+								.anyRequest().authenticated()
 
+				).exceptionHandling( exception -> exception
+						.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+				).sessionManagement( session -> session
+						.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				);
 
-		return httpSecurity.build();
+		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+//		httpSecurity.csrf()
+//				.disable()
+//				.authorizeHttpRequests(
+//						(authorize) -> authorize
+//								.requestMatchers(HttpMethod.POST,"/api/v1/auth/login").permitAll()
+//								.anyRequest()
+//								.authenticated()
+//
+//				).exceptionHandling(exception -> exception
+//						.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+//				).sessionManagement( session -> session
+//						.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//				);
+//
+//		httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//		httpSecurity.authenticationProvider(daoAuthenticationProvider());
+//
+//		return httpSecurity.build();
 	}
 
-//	@Bean
-//	public UserDetailsService userDetailsService(){
-//		UserDetails henish = User.builder()
-//				.username("henish")
-//				.password(passwordEncoder().encode("henish"))
-//				.roles("USER")
-//				.build();
-//
-//		UserDetails admin = User.builder()
-//				.username("admin")
-//				.password(passwordEncoder().encode("admin"))
-//				.roles("ADMIN")
-//				.build();
-//		return new InMemoryUserDetailsManager(henish,admin);
-//	}
+	@Bean
+	public DaoAuthenticationProvider daoAuthenticationProvider() {
+
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setUserDetailsService(customUserDetailsService);
+		provider.setPasswordEncoder(passwordEncoder());
+		return provider;
+
+	}
+
 
 }
