@@ -1,6 +1,7 @@
 package com.henishpatel.bloggingapplication.security;
 
 import com.henishpatel.bloggingapplication.entities.User;
+import com.henishpatel.bloggingapplication.exceptions.ResourceNotFoundException;
 import com.henishpatel.bloggingapplication.repositories.UserRepo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,16 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
 		User user = userRepo.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
 				.orElseThrow(() ->
-						new UsernameNotFoundException("User not found with username or email: "+ usernameOrEmail));
-
-
-		Set<GrantedAuthority> authorities = user
-				.getRoles()
-				.stream()
-				.map((role) -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
-
-		return new org.springframework.security.core.userdetails.User(user.getEmail(),
-				user.getPassword(),
-				authorities);
+						new ResourceNotFoundException(usernameOrEmail));
+		return user;
 	}
 }
