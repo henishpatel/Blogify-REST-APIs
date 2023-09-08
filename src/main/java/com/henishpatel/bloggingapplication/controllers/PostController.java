@@ -47,7 +47,6 @@ public class PostController {
 //		return new ResponseEntity<PostDTO>(createPostDTO, HttpStatus.CREATED);
 //	}
 
-	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/posts/{postId}")
 	public ResponseEntity<ApiResponse> deletePost(@PathVariable Integer postId){
 		postService.deletePost(postId);

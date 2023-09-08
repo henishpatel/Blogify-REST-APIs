@@ -32,6 +32,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
 		User user = dtoToUser(userDTO);
+		Role role = roleRepo.findById(AppConstants.NORMAL_USER).get();
+
+		user.getRoles().add(role);
 		User savedUser = userRepo.save(user);
 		return userToDto(savedUser);
 	}
