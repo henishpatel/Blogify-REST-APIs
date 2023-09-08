@@ -14,6 +14,9 @@ VALUES ('userdaniel','Daniel', 'daniel@example.com', 'danielpass', 'Game develop
 INSERT INTO users (user_name, name, email, password, about)
 VALUES ('usersophia','Sophia', 'sophia@example.com', 'sophiapass', 'Graphic designer');
 
+INSERT INTO users (user_name, name, email, password, about)
+VALUES ('usersophia','Sophia', 'sophia@example.com', 'sophiapass', 'Graphic designer');
+
 -- Insert data for Category entity
 INSERT INTO categories (name, description)
 VALUES ('Art', 'Creative arts and design');

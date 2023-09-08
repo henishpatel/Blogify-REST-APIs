@@ -8,6 +8,7 @@ import com.henishpatel.bloggingapplication.payload.UserDTO;
 import com.henishpatel.bloggingapplication.repositories.UserRepo;
 import com.henishpatel.bloggingapplication.security.JwtTokenHelper;
 import com.henishpatel.bloggingapplication.services.UserService;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -65,16 +66,22 @@ public class AuthController {
 
 	}
 
+	@PostMapping("/register")
+	public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody UserDTO userDTO) {
+		UserDTO registeredUser = this.userService.registerNewUser(userDTO);
+		return new ResponseEntity<UserDTO>(registeredUser, HttpStatus.CREATED);
+	}
+
 	// get loggedin user data
 	@Autowired
 	private UserRepo userRepo;
 	@Autowired
 	private ModelMapper mapper;
 
-//	@GetMapping("/current-user/")
-//	public ResponseEntity<UserDTO> getUser(Principal principal) {
-//		User user = userRepo.findByEmail(principal.getName()).get();
-//		return new ResponseEntity<UserDTO>(this.mapper.map(user, UserDTO.class), HttpStatus.OK);
-//	}
+	@GetMapping("/current-user/")
+	public ResponseEntity<UserDTO> getUser(Principal principal) {
+		User user = userRepo.findByEmail(principal.getName()).get();
+		return new ResponseEntity<UserDTO>(this.mapper.map(user, UserDTO.class), HttpStatus.OK);
+	}
 
 }

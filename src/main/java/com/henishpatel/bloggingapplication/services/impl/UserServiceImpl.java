@@ -1,8 +1,11 @@
 package com.henishpatel.bloggingapplication.services.impl;
 
+import com.henishpatel.bloggingapplication.config.AppConstants;
+import com.henishpatel.bloggingapplication.entities.Role;
 import com.henishpatel.bloggingapplication.entities.User;
 import com.henishpatel.bloggingapplication.exceptions.ResourceNotFoundException;
 import com.henishpatel.bloggingapplication.payload.UserDTO;
+import com.henishpatel.bloggingapplication.repositories.RoleRepo;
 import com.henishpatel.bloggingapplication.repositories.UserRepo;
 import com.henishpatel.bloggingapplication.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -21,6 +24,10 @@ public class UserServiceImpl implements UserService {
 	private UserRepo userRepo;
 	@Autowired
 	private ModelMapper modelMapper;
+	@Autowired
+	private RoleRepo roleRepo;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
@@ -61,6 +68,24 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(Integer userId) {
 		User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User","Id",userId));
 		userRepo.delete(user);
+	}
+
+	@Override
+	public UserDTO registerNewUser(UserDTO userDTO) {
+
+		User user = modelMapper.map(userDTO, User.class);
+
+		// encoded the password
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+		// roles
+		Role role = roleRepo.findById(AppConstants.NORMAL_USER).get();
+
+		user.getRoles().add(role);
+
+		User newUser = userRepo.save(user);
+
+		return this.modelMapper.map(newUser, UserDTO.class);
 	}
 
 	public User dtoToUser(UserDTO userDTO) {

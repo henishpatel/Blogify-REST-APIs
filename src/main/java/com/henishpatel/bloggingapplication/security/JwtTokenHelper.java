@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,8 +22,12 @@ import java.security.Key;
 public class JwtTokenHelper {
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
+	private SecretKey secretKey;
 
-	private String secret = "jwtTokenKey";
+	public JwtTokenHelper() {
+		// Load or generate secret key securely
+		this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+	}
 
 	//retrieve username from jwt token
 	public String getUsernameFromToken(String token) {
@@ -41,7 +46,7 @@ public class JwtTokenHelper {
 
 	//for retrieveing any information from token we will need the secret key
 	private Claims getAllClaimsFromToken(String token) {
-		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
 	}
 
 	//check if the token has expired
@@ -65,10 +70,9 @@ public class JwtTokenHelper {
 		return Keys.secretKeyFor(SignatureAlgorithm.HS512);
 	}
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
-		Key key = generateStrongHs512Key();
 		String token = Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-				.signWith(key).compact();
+				.signWith(secretKey).compact();
 
 		return token;
 	}
