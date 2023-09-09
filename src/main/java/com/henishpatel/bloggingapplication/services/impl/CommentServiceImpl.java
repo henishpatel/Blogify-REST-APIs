@@ -10,6 +10,8 @@ import com.henishpatel.bloggingapplication.repositories.PostRepo;
 import com.henishpatel.bloggingapplication.services.CommentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +25,11 @@ public class CommentServiceImpl implements CommentService {
 
 	@Autowired
 	private ModelMapper modelMapper;
+
+	public String getAuthenticatedUserName() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication.getName();// If no user is authenticated or no ID is found
+	}
 
 	@Override
 	public CommentDTO createComment(CommentDTO commentDTO, Integer postId) {
@@ -42,6 +49,9 @@ public class CommentServiceImpl implements CommentService {
 	public void deleteCommentById(Integer commentId) {
 		Comment comment = this.commentRepo.findById(commentId)
 				.orElseThrow(() -> new ResourceNotFoundException("Comment", "CommentId", commentId));
+		if (!comment.getUser().getUsername().equals(getAuthenticatedUserName())) {
+			throw new ResourceNotFoundException("You are not authorized to delete this comment.");
+		}
 		this.commentRepo.delete(comment);
 	}
 }

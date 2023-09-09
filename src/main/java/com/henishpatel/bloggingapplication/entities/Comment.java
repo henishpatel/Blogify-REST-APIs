@@ -24,4 +24,8 @@ public class Comment {
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Post post;
 
+	@ManyToOne
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private User user;
+
 }

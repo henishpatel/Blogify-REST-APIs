@@ -77,7 +77,7 @@ public class PostServiceImpl implements PostService {
 		Post post = postRepo.findById(postId)
 				.orElseThrow(() -> new ResourceNotFoundException("Post","Post ID",postId));
 		if (!post.getUser().getUsername().equals(getAuthenticatedUserName())) {
-			throw new ResourceNotFoundException("You are not authorized to update this post.");
+			throw new ResourceNotFoundException("You are not authorized to delete this post.");
 		}
 		postRepo.delete(post);
 	}

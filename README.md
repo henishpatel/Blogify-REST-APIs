@@ -38,10 +38,10 @@ Test them using postman or any other rest client.
 ##### <a id="register">Sign Up -> /api/auth/signup</a>
 ```json
 {
-	"name": "John Doe",
-	"username": "userjohn",
-	"password": "password",
-	"email": "john.doe@example.com",
+    "name": "John Doe",
+    "username": "userjohn",
+    "password": "password",
+    "email": "john.doe@example.com",
     "about": "I am Developer"
 }
 ```
@@ -49,7 +49,7 @@ Test them using postman or any other rest client.
 ##### <a id="login">Log In -> /api/auth/signin</a>
 ```json
 {
-	"username": "userjohn",
-	"password": "password"
+    "username": "userjohn",
+    "password": "password"
 }
 ```

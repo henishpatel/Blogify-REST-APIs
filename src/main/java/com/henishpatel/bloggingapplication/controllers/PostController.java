@@ -2,9 +2,13 @@ package com.henishpatel.bloggingapplication.controllers;
 
 import com.henishpatel.bloggingapplication.config.AppConstants;
 import com.henishpatel.bloggingapplication.entities.Post;
+import com.henishpatel.bloggingapplication.entities.User;
+import com.henishpatel.bloggingapplication.exceptions.ResourceNotFoundException;
 import com.henishpatel.bloggingapplication.payload.ApiResponse;
 import com.henishpatel.bloggingapplication.payload.PostDTO;
 import com.henishpatel.bloggingapplication.payload.PostResponse;
+import com.henishpatel.bloggingapplication.repositories.PostRepo;
+import com.henishpatel.bloggingapplication.repositories.UserRepo;
 import com.henishpatel.bloggingapplication.services.FileService;
 import com.henishpatel.bloggingapplication.services.PostService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -40,6 +44,12 @@ public class PostController {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private UserRepo userRepo;
+
+	@Autowired
+	private PostRepo postRepo;
 
 	@Value("${project.image}")
 	private String path;
@@ -140,22 +150,23 @@ public class PostController {
 	}
 
 	// Post Image Upload
-	@SecurityRequirement(
-			name = "Bearer Authentication"
-	)
-	@PostMapping("/post/image/upload/{postId}")
-	public ResponseEntity<PostDTO> uploadImage(
-			@RequestParam("image") MultipartFile image,
-			@PathVariable Integer postId
-	) throws IOException {
-
-		PostDTO postDTO = postService.getPostById(postId);
-
-		String fileName = this.fileService.uploadImage(path, image);
-		postDTO.setImageName(fileName);
-		PostDTO updatePost = this.postService.updatePost(postDTO, postId);
-		return new ResponseEntity<PostDTO>(updatePost, HttpStatus.OK);
-	}
+//	@SecurityRequirement(
+//			name = "Bearer Authentication"
+//	)
+//	@PostMapping("/post/image/upload/{postId}")
+//	public ResponseEntity<PostDTO> uploadImage(
+//			@RequestParam("image") MultipartFile image,
+//			@PathVariable Integer postId
+//	) throws IOException {
+//
+//		PostDTO postDTO = postService.getPostById(postId);
+//
+//
+//		String fileName = this.fileService.uploadImage(path, image);
+//		postDTO.setImageName(fileName);
+//		PostDTO updatePost = this.postService.updatePost(postDTO, postId);
+//		return new ResponseEntity<PostDTO>(updatePost, HttpStatus.OK);
+//	}
 
 	//Get image
 	@SecurityRequirement(
@@ -185,6 +196,14 @@ public class PostController {
 			@PathVariable Integer categoryId
 	) throws IOException {
 //		Handle image upload
+
+		User user = userRepo.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("User","User ID",userId));
+
+		if (!user.getUsername().equals(getAuthenticatedUserName())) {
+			throw new ResourceNotFoundException("You are not authorized to create this post on other user behalf.");
+		}
+
 		String fileName = this.fileService.uploadImage(path, image);
 
 		PostDTO postDTO = objectMapper.readValue(postDTOString, PostDTO.class);
@@ -206,6 +225,15 @@ public class PostController {
 			@RequestPart("image") MultipartFile image,
 			@PathVariable Integer postId
 	) throws IOException{
+
+		Post post = postRepo.findById(postId)
+				.orElseThrow(() -> new ResourceNotFoundException("Post","Post ID",postId));
+
+
+		if (!post.getUser().getUsername().equals(getAuthenticatedUserName())) {
+			throw new ResourceNotFoundException("You are not authorized to update this post .");
+		}
+
 		//Handle image upload
 		String fileName = this.fileService.uploadImage(path, image);
 		PostDTO postDTO = objectMapper.readValue(postDTOString, PostDTO.class);

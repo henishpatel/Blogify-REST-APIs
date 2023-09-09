@@ -23,11 +23,6 @@ public class CategoryController {
 	@Autowired
 	private CategoryService categoryService;
 
-	public String getAuthenticatedUserName() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return authentication.getName();// If no user is authenticated or no ID is found
-	}
-
 	@SecurityRequirement(
 			name = "Bearer Authentication"
 	)
@@ -71,6 +66,7 @@ public class CategoryController {
 			name = "Bearer Authentication"
 	)
 	@GetMapping("/{categoryId}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Integer categoryId){
 		return ResponseEntity.ok(categoryService.getCategoryById(categoryId));
 	}
