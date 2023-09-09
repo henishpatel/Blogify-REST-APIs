@@ -4,7 +4,10 @@ import com.henishpatel.bloggingapplication.entities.User;
 import com.henishpatel.bloggingapplication.payload.ApiResponse;
 import com.henishpatel.bloggingapplication.payload.UserDTO;
 import com.henishpatel.bloggingapplication.repositories.UserRepo;
+import com.henishpatel.bloggingapplication.security.JwtTokenHelper;
 import com.henishpatel.bloggingapplication.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,19 +32,15 @@ public class UserController {
 	@Autowired
 	private UserRepo userRepo;
 
-	public Integer getAuthenticatedUserId() {
+	public String getAuthenticatedUserName() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-			User user = (User) authentication.getPrincipal();
-			// Assuming your user details object has a method to get the user's ID
-			return user.getId(); // Adjust this based on your UserDetails implementation
-		}
-
-		return null; // If no user is authenticated or no ID is found
+		return authentication.getName();// If no user is authenticated or no ID is found
 	}
 
 	// POST - create user
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@PostMapping("/")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO){
@@ -50,13 +49,25 @@ public class UserController {
 	}
 
 	// PUT - update user
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@PutMapping("/{userId}")
 	public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO,@PathVariable Integer userId){
+
+		// Check if the username in the JWT token matches the provided UserDTO username
+		if (!getAuthenticatedUserName().equals(userDTO.getUsername())) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+
 		UserDTO updateUserDTO = userService.updateUser(userDTO, userId);
 		return ResponseEntity.ok(updateUserDTO);
 	}
 
 	// DELETE - delete user
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@DeleteMapping("/{userId}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<ApiResponse> deleteUser(@PathVariable Integer userId){
@@ -65,24 +76,28 @@ public class UserController {
 	}
 
 	// GET - get user
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@GetMapping("/")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<UserDTO>> getAllUsers(){
 		return ResponseEntity.ok(userService.getAllUsers());
 	}
 
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@GetMapping("/{userId}")
-	public ResponseEntity<?> getUserById(@PathVariable Integer userId,Principal principal){
+	public ResponseEntity<?> getUserById(@PathVariable Integer userId) {
 
-		if (principal != null && principal.getName() != null) {
-			Integer authenticatedUserId = getAuthenticatedUserId();
-			if (authenticatedUserId.equals(userId)) {
-				// User is authorized to retrieve their own identity
-				UserDTO userDTO = userService.getUserById(userId);
-				return ResponseEntity.ok(userDTO);
-			}
+		// Retrieve the user's data by userId
+		UserDTO userDTO = userService.getUserById(userId);
+
+		// Check if the username in the JWT token matches the username in the retrieved user data
+		if (!getAuthenticatedUserName().equals(userDTO.getUsername())) {
+			return new ResponseEntity<ApiResponse>(new ApiResponse("You are not allowed to access other user details",false),HttpStatus.FORBIDDEN);
 		}
-		return new ResponseEntity<ApiResponse>(new ApiResponse("You are not allowed to access other user details",false),HttpStatus.FORBIDDEN);
+		return ResponseEntity.ok(userDTO);
 	}
-
 }

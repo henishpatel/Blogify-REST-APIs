@@ -3,6 +3,8 @@ package com.henishpatel.bloggingapplication.config;
 import com.henishpatel.bloggingapplication.security.CustomUserDetailsService;
 import com.henishpatel.bloggingapplication.security.JwtAuthenticationEntryPoint;
 import com.henishpatel.bloggingapplication.security.JwtAuthenticationFilter;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebSecurity
 @EnableWebMvc
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@SecurityScheme(
+		name = "Bearer Authentication",
+		type = SecuritySchemeType.HTTP,
+		bearerFormat = "JWT",
+		scheme = "bearer"
+)
 public class SecurityConfig {
 
 	private final CustomUserDetailsService customUserDetailsService;
@@ -46,6 +54,10 @@ public class SecurityConfig {
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 		return configuration.getAuthenticationManager();
 	}
+	public static final String[] PUBLIC_URLS = {"/api/v1/auth/**", "/v3/api-docs/**", "/v2/api-docs",
+			"/swagger-resources/**", "/swagger-ui/**", "/webjars/**"
+
+	};
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -54,8 +66,7 @@ public class SecurityConfig {
 						//authorize.anyRequest().authenticated()
 						authorize
 								//.requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
-								.requestMatchers("/api/v1/auth/**").permitAll()
-								.requestMatchers("/api/v1/auth/register").permitAll()
+								.requestMatchers(PUBLIC_URLS).permitAll()
 								.anyRequest().authenticated()
 
 				).exceptionHandling( exception -> exception

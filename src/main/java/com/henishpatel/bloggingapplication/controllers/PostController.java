@@ -7,6 +7,7 @@ import com.henishpatel.bloggingapplication.payload.PostDTO;
 import com.henishpatel.bloggingapplication.payload.PostResponse;
 import com.henishpatel.bloggingapplication.services.FileService;
 import com.henishpatel.bloggingapplication.services.PostService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,12 +44,21 @@ public class PostController {
 	@Value("${project.image}")
 	private String path;
 
+	public String getAuthenticatedUserName() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication.getName();// If no user is authenticated or no ID is found
+	}
+
+
 //	@PostMapping("/user/{userId}/category/{categoryId}/posts")
 //	public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO, @PathVariable Integer userId, @PathVariable Integer categoryId){
 //		PostDTO createPostDTO = postService.createPost(postDTO,userId,categoryId);
 //		return new ResponseEntity<PostDTO>(createPostDTO, HttpStatus.CREATED);
 //	}
 
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@DeleteMapping("/posts/{postId}")
 	public ResponseEntity<ApiResponse> deletePost(@PathVariable Integer postId){
 		postService.deletePost(postId);
@@ -59,6 +71,9 @@ public class PostController {
 //		return new ResponseEntity<PostDTO>(updatePostDTO,HttpStatus.OK);
 //	}
 
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@GetMapping("/user/{userId}/posts")
 	public ResponseEntity<PostResponse> getPostByUserId(
 			@PathVariable Integer userId,
@@ -70,6 +85,10 @@ public class PostController {
 		PostResponse postResponseDTOS = postService.getPostsByUser(userId, pageNumber, pageSize, sortBy, sortDir);
 		return new ResponseEntity<PostResponse>(postResponseDTOS,HttpStatus.OK);
 	}
+
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@GetMapping("/category/{categoryId}/posts")
 	public ResponseEntity<PostResponse> getPostByCategoryId(
 			@PathVariable Integer categoryId,
@@ -82,6 +101,9 @@ public class PostController {
 		return new ResponseEntity<PostResponse>(postResponseDTOS,HttpStatus.OK);
 	}
 
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@GetMapping("/posts")
 	public ResponseEntity<PostResponse> getAllPost(
 			@RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
@@ -93,12 +115,18 @@ public class PostController {
 		return new ResponseEntity<PostResponse>(postResponseDTOS,HttpStatus.OK);
 	}
 
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@GetMapping("/posts/{postId}")
 	public ResponseEntity<PostDTO> getPostById(@PathVariable Integer postId){
 		PostDTO postDTO = postService.getPostById(postId);
 		return new ResponseEntity<PostDTO>(postDTO,HttpStatus.OK);
 	}
 
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@GetMapping("/posts/search/{searchKeyword}")
 	public ResponseEntity<PostResponse> getPostsByKeyword(
 			@PathVariable String searchKeyword,
@@ -112,6 +140,9 @@ public class PostController {
 	}
 
 	// Post Image Upload
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@PostMapping("/post/image/upload/{postId}")
 	public ResponseEntity<PostDTO> uploadImage(
 			@RequestParam("image") MultipartFile image,
@@ -127,6 +158,9 @@ public class PostController {
 	}
 
 	//Get image
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@GetMapping(value = "/post/image/{imageName}",produces = MediaType.IMAGE_JPEG_VALUE)
 	public void downloadImage(
 			@PathVariable("imageName") String imageName,
@@ -138,7 +172,10 @@ public class PostController {
 		StreamUtils.copy(resource,response.getOutputStream())   ;
 
 	}
-//
+
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@PostMapping(value = "/user/{userId}/category/{categoryId}/posts", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
 	public ResponseEntity<PostDTO> createPostWithImage(
 //			@RequestBody PostDTO postDTO, // Use @RequestPart for the JSON body
@@ -160,6 +197,9 @@ public class PostController {
 		return new ResponseEntity<>(createPostDTO, HttpStatus.CREATED);
 	}
 
+	@SecurityRequirement(
+			name = "Bearer Authentication"
+	)
 	@PutMapping(value ="/posts/{postId}",consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
 	public ResponseEntity<PostDTO> updatePostById(
 			@RequestPart("postDTO") String postDTOString,

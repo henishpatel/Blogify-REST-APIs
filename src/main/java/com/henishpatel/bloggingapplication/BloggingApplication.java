@@ -3,6 +3,10 @@ package com.henishpatel.bloggingapplication;
 import com.henishpatel.bloggingapplication.config.AppConstants;
 import com.henishpatel.bloggingapplication.entities.Role;
 import com.henishpatel.bloggingapplication.repositories.RoleRepo;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,6 +17,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
+@OpenAPIDefinition(
+		info = @Info(
+				title = "Blogify REST-APIs",
+				description = "Blofigy app made using Spring Boot - APIs Documentation",
+				version = "v1.0",
+				contact = @Contact(
+						name = "Henish Patel",
+						email = "henish134@gmail.com",
+						url = "https://github.com/henishpatel"
+				),
+				license = @License(
+						name = "Apache 2.0",
+						url = "https://github.com/henishpatel"
+				)
+		)
+)
 @SpringBootApplication
 public class BloggingApplication implements CommandLineRunner {
 

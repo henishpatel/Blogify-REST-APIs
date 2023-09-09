@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
 		User user = userRepo.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
 				.orElseThrow(() ->
-						new ResourceNotFoundException(usernameOrEmail));
+						new ResourceNotFoundException("Username / Email or Password is incorrect."));
 		return user;
 	}
 }

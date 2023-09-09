@@ -24,7 +24,7 @@ public class ResourceNotFoundException extends RuntimeException {
 		this.fieldName = fieldName;
 	}
 	public ResourceNotFoundException(String resourceName) {
-		super(String.format("Username / Email or Password is incorrect.", resourceName));
+		super(String.format(resourceName));
 		this.resourceName = resourceName;
 	}
 

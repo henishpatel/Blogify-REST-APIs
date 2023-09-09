@@ -9,6 +9,7 @@ import com.henishpatel.bloggingapplication.payload.PostResponse;
 import com.henishpatel.bloggingapplication.repositories.CategoryRepo;
 import com.henishpatel.bloggingapplication.repositories.PostRepo;
 import com.henishpatel.bloggingapplication.repositories.UserRepo;
+import com.henishpatel.bloggingapplication.security.JwtTokenHelper;
 import com.henishpatel.bloggingapplication.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -35,6 +38,11 @@ public class PostServiceImpl implements PostService {
 
 	@Autowired
 	private ModelMapper modelMapper;
+
+	public String getAuthenticatedUserName() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication.getName();// If no user is authenticated or no ID is found
+	}
 
 	@Override
 	public PostDTO createPost(PostDTO postDTO, Integer userId, Integer categoryId) {
@@ -68,6 +76,9 @@ public class PostServiceImpl implements PostService {
 	public void deletePost(Integer postId) {
 		Post post = postRepo.findById(postId)
 				.orElseThrow(() -> new ResourceNotFoundException("Post","Post ID",postId));
+		if (!post.getUser().getUsername().equals(getAuthenticatedUserName())) {
+			throw new ResourceNotFoundException("You are not authorized to update this post.");
+		}
 		postRepo.delete(post);
 	}
 
