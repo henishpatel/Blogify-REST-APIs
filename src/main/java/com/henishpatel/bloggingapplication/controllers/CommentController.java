@@ -1,7 +1,9 @@
 package com.henishpatel.bloggingapplication.controllers;
 
+import com.henishpatel.bloggingapplication.entities.User;
 import com.henishpatel.bloggingapplication.payload.ApiResponse;
 import com.henishpatel.bloggingapplication.payload.CommentDTO;
+import com.henishpatel.bloggingapplication.repositories.UserRepo;
 import com.henishpatel.bloggingapplication.services.CommentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/")

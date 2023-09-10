@@ -2,6 +2,7 @@ package com.henishpatel.bloggingapplication.controllers;
 
 import com.henishpatel.bloggingapplication.entities.User;
 import com.henishpatel.bloggingapplication.exceptions.ApiException;
+import com.henishpatel.bloggingapplication.exceptions.ResourceNotFoundException;
 import com.henishpatel.bloggingapplication.payload.JwtAuthRequest;
 import com.henishpatel.bloggingapplication.payload.JwtAuthResponse;
 import com.henishpatel.bloggingapplication.payload.UserDTO;
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +40,11 @@ public class AuthController {
 
 	@Autowired
 	private UserService userService;
+
+	public String getAuthenticatedUserName() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication.getName();// If no user is authenticated or no ID is found
+	}
 
 	@PostMapping("/login")
 	public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request) throws Exception {
@@ -72,16 +80,8 @@ public class AuthController {
 		return new ResponseEntity<UserDTO>(registeredUser, HttpStatus.CREATED);
 	}
 
-	// get loggedin user data
-	@Autowired
-	private UserRepo userRepo;
 	@Autowired
 	private ModelMapper mapper;
 
-	@GetMapping("/current-user/")
-	public ResponseEntity<UserDTO> getUser(Principal principal) {
-		User user = userRepo.findByEmail(principal.getName()).get();
-		return new ResponseEntity<UserDTO>(this.mapper.map(user, UserDTO.class), HttpStatus.OK);
-	}
 
 }

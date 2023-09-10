@@ -1,16 +1,21 @@
 -- Insert data for User entity
+-- password is admin
 INSERT INTO users (user_name, name, email, password, about)
 VALUES ('admin','admin' ,'admin@example.com', '$2a$10$FgMf44MrR0brclqh8WLWjOInsKcmGCzX7E9jfYK2VB2WMlbemly4S', 'admin');
 
+-- password is sarahpass
 INSERT INTO users (user_name, name, email, password, about)
 VALUES ('usersarah','Sarah' ,'sarah@example.com', '$2a$10$fLdyiDajozr68SgEjLo64eAxU02IT3YpF0H9V7OGJL2ia6mqDpkQK', 'Software engineer');
 
+-- password is michealpass
 INSERT INTO users (user_name, name, email, password, about)
 VALUES ('usermichael','Michael', 'michael@example.com', '$2a$10$0n3xaeaToXbiDza7ARsEx.8/DOKjQaIuhYpwZnV5Sj6nLwTSZNJSC', 'Data scientist');
 
+-- password is emilypass
 INSERT INTO users (user_name, name, email, password, about)
 VALUES ('useremily','Emily', 'emily@example.com', '$2a$10$eSzkJY93HDqUjVDnddTQPO4a9DnaUErG8x6qxfTK4n8cAjEgFHNv2', 'Front-end developer');
 
+-- password is danielpass
 INSERT INTO users (user_name, name, email, password, about)
 VALUES ('userdaniel','Daniel', 'daniel@example.com', '$2a$10$IE.rG7b8ibrWynGpbaSFeu1XTmC8QA/7Jml/qfG5qHoAeS7QlyV86', 'Game developer');
 

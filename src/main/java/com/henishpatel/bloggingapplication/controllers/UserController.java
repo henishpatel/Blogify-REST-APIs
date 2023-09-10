@@ -53,11 +53,11 @@ public class UserController {
 			name = "Bearer Authentication"
 	)
 	@PutMapping("/{userId}")
-	public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO,@PathVariable Integer userId){
+	public ResponseEntity<?> updateUser(@Valid @RequestBody UserDTO userDTO,@PathVariable Integer userId){
 
 		// Check if the username in the JWT token matches the provided UserDTO username
 		if (!getAuthenticatedUserName().equals(userDTO.getUsername())) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+			return new ResponseEntity<>(new ApiResponse("You are not allowed to update any other",true),HttpStatus.OK);
 		}
 
 		UserDTO updateUserDTO = userService.updateUser(userDTO, userId);
@@ -89,15 +89,11 @@ public class UserController {
 			name = "Bearer Authentication"
 	)
 	@GetMapping("/{userId}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getUserById(@PathVariable Integer userId) {
 
 		// Retrieve the user's data by userId
 		UserDTO userDTO = userService.getUserById(userId);
-
-		// Check if the username in the JWT token matches the username in the retrieved user data
-		if (!getAuthenticatedUserName().equals(userDTO.getUsername())) {
-			return new ResponseEntity<ApiResponse>(new ApiResponse("You are not allowed to access other user details",false),HttpStatus.FORBIDDEN);
-		}
 		return ResponseEntity.ok(userDTO);
 	}
 }
